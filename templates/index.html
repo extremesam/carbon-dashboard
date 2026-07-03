@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carbon Risk Dashboard</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex h-screen">
+
+    <!-- Sidebar -->
+    <div class="w-1/4 bg-white p-4 shadow">
+        <h2 class="text-xl font-bold mb-4">Grid Checks</h2>
+
+        <input id="regionInput" class="border p-2 w-full" placeholder="Enter region"/>
+        <button onclick="runGridCheck()" class="mt-2 bg-blue-500 text-white px-4 py-2">
+            Run Check
+        </button>
+
+        <div id="gridResult" class="mt-4 text-sm"></div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex-1 p-4">
+
+        <!-- Upload -->
+        <input type="file" id="csvFile" class="mb-4"/>
+
+        <!-- Map -->
+        <div id="map" class="h-96 mb-4"></div>
+
+        <!-- Chart -->
+        <canvas id="riskChart"></canvas>
+    </div>
+
+</div>
+
+<script src="/static/js/main.js"></script>
+
+</body>
+</html>
