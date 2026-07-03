@@ -1,0 +1,15 @@
+facility_name,address,latitude,longitude,region,sector,capacity_mw,annual_emissions_tco2e
+Egbin Power Station,"Egbin, Ikorodu, Lagos",6.4351,3.5883,Lagos,power generation,1320,
+Apapa Tank Farm,"Apapa Wharf Rd, Lagos",6.4432,3.3591,Lagos,oil and gas,,42000
+Lekki Free Zone Manufacturing Hub,"Lekki Free Zone, Lagos",6.4400,3.9300,Lagos,manufacturing,85,
+Kaduna Refinery,"Kaduna Refining Complex, Kaduna",10.6000,7.4200,Kaduna,oil and gas,,61000
+Port Harcourt Refining Co,"Alesa-Eleme, Port Harcourt",4.7900,7.0800,Port Harcourt,oil and gas,210,
+Kano Industrial Estate,"Sharada Industrial Estate, Kano",11.9800,8.4900,Kano,manufacturing,,15500
+Abuja Central Business District Complex,"Central Area, Abuja",9.0579,7.4951,Abuja,commercial,,3200
+Ibadan Agro Processing Plant,"Oluyole Industrial Estate, Ibadan",7.3500,3.8800,Ibadan,agriculture,18,
+Warri Petrochemical Terminal,"Warri Refinery Rd, Warri",5.5167,5.7500,Warri,oil and gas,,53000
+Jos Tin Mining Site,"Bukuru, Jos",9.7833,8.8500,Jos,mining,,9800
+Enugu Coal City Depot,"Ogui Rd, Enugu",6.4413,7.4988,Enugu,logistics,,4100
+Benin City Distribution Center,"Airport Rd, Benin City",6.3350,5.6037,Benin City,logistics,,2600
+Proforce Defence Systems Yard,"Ede Rd, Kaduna",10.5300,7.4400,Kaduna,defence,,5400
+Lagos Solar Microgrid Cluster,"Badagry, Lagos",6.4160,2.8820,Lagos,power generation,12,
