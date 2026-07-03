@@ -1,48 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Carbon Risk Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carbon Risk Grid — Facility Intelligence Dashboard</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          void: '#0A0B0D',
+          panel: '#131519',
+          raised: '#1B1E23',
+          hairline: '#23262B',
+          acid: '#D4FF3D',
+          muted: '#7A8088',
+          'risk-low': '#3DDC84',
+          'risk-medium': '#FFD23D',
+          'risk-high': '#FF9F40',
+          'risk-critical': '#FF4D4D',
+        },
+        fontFamily: {
+          display: ['"Barlow Condensed"', 'sans-serif'],
+          body: ['Inter', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        }
+      }
+    }
+  }
+</script>
+<link rel="stylesheet" href="/static/css/style.css">
 </head>
+<body class="bg-void text-gray-100 font-body min-h-screen">
 
-<body class="bg-gray-100">
-
-<div class="flex h-screen">
-
-    <!-- Sidebar -->
-    <div class="w-1/4 bg-white p-4 shadow">
-        <h2 class="text-xl font-bold mb-4">Grid Checks</h2>
-
-        <input id="regionInput" class="border p-2 w-full" placeholder="Enter region"/>
-        <button onclick="runGridCheck()" class="mt-2 bg-blue-500 text-white px-4 py-2">
-            Run Check
-        </button>
-
-        <div id="gridResult" class="mt-4 text-sm"></div>
+<!-- Top bar -->
+<header class="border-b border-hairline bg-panel/80 backdrop-blur sticky top-0 z-30">
+  <div class="px-6 py-3 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-2.5 h-2.5 rounded-full bg-acid shadow-[0_0_8px_2px_rgba(212,255,61,0.6)]"></div>
+      <div>
+        <h1 class="font-display font-700 text-2xl tracking-wide leading-none uppercase">Carbon Risk Grid</h1>
+        <p class="text-[11px] text-muted font-mono tracking-widest uppercase">Facility Intelligence · Geospatial Emissions Layer</p>
+      </div>
     </div>
 
-    <!-- Main -->
-    <div class="flex-1 p-4">
+    <div class="flex items-center gap-3">
+      <button id="loadSampleBtn" class="text-xs font-mono px-3 py-2 rounded border border-hairline text-muted hover:text-acid hover:border-acid transition-colors">
+        Load sample data
+      </button>
+      <label class="text-xs font-mono px-3 py-2 rounded border border-hairline text-gray-200 hover:border-acid cursor-pointer transition-colors flex items-center gap-2">
+        <input type="file" id="csvInput" accept=".csv" class="hidden">
+        <span id="fileLabel">Choose facility CSV…</span>
+      </label>
+      <button id="analyzeBtn" disabled class="text-xs font-mono font-medium px-4 py-2 rounded bg-acid text-void disabled:bg-hairline disabled:text-muted transition-colors">
+        Analyze facilities
+      </button>
+    </div>
+  </div>
+</header>
 
-        <!-- Upload -->
-        <input type="file" id="csvFile" class="mb-4"/>
+<div id="errorBanner" class="hidden px-6 py-2 bg-risk-critical/10 border-b border-risk-critical/40 text-risk-critical text-sm font-mono"></div>
 
-        <!-- Map -->
-        <div id="map" class="h-96 mb-4"></div>
+<!-- Main layout -->
+<main class="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:h-[calc(100vh-61px)]">
 
-        <!-- Chart -->
-        <canvas id="riskChart"></canvas>
+  <!-- Map column -->
+  <section class="lg:col-span-8 relative border-r border-hairline">
+    <div id="map" class="w-full h-[420px] lg:h-full bg-panel"></div>
+
+    <!-- Empty state overlay -->
+    <div id="emptyState" class="absolute inset-0 flex items-center justify-center bg-void/90 pointer-events-none">
+      <div class="text-center max-w-sm px-6">
+        <p class="font-display text-3xl uppercase tracking-wide text-gray-300 mb-2">No facilities loaded</p>
+        <p class="text-sm text-muted mb-4">Upload a CSV of facility addresses to plot carbon risk across the grid, or load the sample dataset to see it in action.</p>
+        <p class="text-[11px] font-mono text-muted">required columns: facility_name, latitude, longitude, region</p>
+      </div>
     </div>
 
-</div>
+    <!-- Legend -->
+    <div id="legend" class="hidden absolute bottom-4 left-4 bg-panel/90 border border-hairline rounded-md px-4 py-3 backdrop-blur">
+      <p class="text-[10px] font-mono uppercase tracking-widest text-muted mb-2">Risk category</p>
+      <div class="flex flex-col gap-1.5 text-xs font-mono">
+        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-risk-low"></span>Low</div>
+        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-risk-medium"></span>Medium</div>
+        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-risk-high"></span>High</div>
+        <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-risk-critical"></span>Critical</div>
+      </div>
+    </div>
+  </section>
 
-<script src="/static/js/main.js"></script>
+  <!-- Sidebar -->
+  <aside class="lg:col-span-4 overflow-y-auto bg-panel p-5 flex flex-col gap-5">
 
+    <!-- Summary metrics -->
+    <div>
+      <p class="text-[11px] font-mono uppercase tracking-widest text-muted mb-2">Fleet summary</p>
+      <div class="grid grid-cols-2 gap-3" id="metricCards">
+        <div class="metric-card"><p class="metric-value" id="mFacilities">—</p><p class="metric-label">Facilities</p></div>
+        <div class="metric-card"><p class="metric-value" id="mRegions">—</p><p class="metric-label">Regions</p></div>
+        <div class="metric-card"><p class="metric-value" id="mAvgRisk">—</p><p class="metric-label">Avg risk score</p></div>
+        <div class="metric-card"><p class="metric-value" id="mEmissions">—</p><p class="metric-label">Est. tCO2e / yr</p></div>
+      </div>
+    </div>
+
+    <!-- Risk distribution -->
+    <div class="bg-raised border border-hairline rounded-md p-4">
+      <p class="text-[11px] font-mono uppercase tracking-widest text-muted mb-3">Risk distribution</p>
+      <div class="h-40"><canvas id="riskChart"></canvas></div>
+    </div>
+
+    <!-- Emissions by region -->
+    <div class="bg-raised border border-hairline rounded-md p-4">
+      <p class="text-[11px] font-mono uppercase tracking-widest text-muted mb-3">Est. emissions by region (tCO2e)</p>
+      <div class="h-44"><canvas id="regionChart"></canvas></div>
+    </div>
+
+    <!-- Grid emission factor parallel-check console (signature element) -->
+    <div class="bg-raised border border-hairline rounded-md p-4 flex-1 flex flex-col min-h-[220px]">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-[11px] font-mono uppercase tracking-widest text-muted">Regional grid emission factors</p>
+        <span id="liveDot" class="hidden text-[10px] font-mono text-acid flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-acid animate-pulse"></span>LIVE
+        </span>
+      </div>
+      <p class="text-[11px] text-muted mb-3">Runs parallel checks against a regional grid-factor reference table for every region in the loaded dataset. <span class="text-muted/70">Baseline figures — swap in a live grid-operator or emissions-API source for production use.</span></p>
+      <button id="runChecksBtn" disabled class="mb-3 text-xs font-mono font-medium px-3 py-2 rounded border border-acid text-acid hover:bg-acid hover:text-void disabled:border-hairline disabled:text-muted disabled:hover:bg-transparent transition-colors">
+        Run parallel grid checks
+      </button>
+      <div id="checkConsole" class="flex-1 overflow-y-auto flex flex-col gap-1.5 font-mono text-xs"></div>
+    </div>
+
+  </aside>
+</main>
+
+<script src="/static/js/app.js"></script>
 </body>
 </html>
