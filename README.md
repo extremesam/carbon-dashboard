@@ -1,3 +1,10 @@
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+
+![Flask](https://img.shields.io/badge/Flask-Web%20App-black)
+
+![License](https://img.shields.io/badge/License-MIT-green)
+
+![Status](https://img.shields.io/badge/Status-Active-success)
 # Carbon Risk Grid — Facility Intelligence Dashboard
 
 A Flask + vanilla JS dashboard that turns a CSV of facility addresses into
