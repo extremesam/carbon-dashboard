@@ -1,17 +1,11 @@
-![Python](https://img.shields.io/badge/Python-3.11-blue)
-
-![Flask](https://img.shields.io/badge/Flask-Web%20App-black)
-
-![License](https://img.shields.io/badge/License-MIT-green)
-
-![Status](https://img.shields.io/badge/Status-Active-success)
+![Python](https://img.shields.io/badge/Python-3.11-blue) ![Flask](https://img.shields.io/badge/Flask-Web%20App-black) ![License](https://img.shields.io/badge/License-MIT-green) ![Status](https://img.shields.io/badge/Status-Active-success)
 # Carbon Risk Grid — Facility Intelligence Dashboard
 
 A Flask + vanilla JS dashboard that turns a CSV of facility addresses into
 a live carbon risk map — with Chart.js metrics and a sidebar console that
 runs parallel checks against regional grid emission factors.
 
-##[Live demo →](https://carbon-risk.onrender.com/)
+[Live demo →](https://carbon-risk.onrender.com/)
 
 ![Carbon Risk Grid dashboard screenshot](docs/screenshot.png)
 
